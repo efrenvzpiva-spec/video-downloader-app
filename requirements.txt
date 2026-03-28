@@ -1,0 +1,7 @@
+# Dependencias de Python para Video Downloader
+# Instalar con: pip install -r requirements.txt
+
+Flask==3.0.0
+flask-cors==4.0.0
+yt-dlp==2024.3.10
+Werkzeug==3.0.1
