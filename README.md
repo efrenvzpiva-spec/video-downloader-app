@@ -2,6 +2,23 @@
 
 **App completa para descargar videos de YouTube, Instagram, Facebook y X (Twitter)**
 
+## 🌐 USA LA APP EN LÍNEA (100% WEB)
+
+**🚀 VERSIÓN LISTA PARA USAR - NO REQUIERE INSTALACIÓN**
+
+➡️ **Accede directamente desde tu navegador:**
+### **[https://efrenvzpiva-spec.github.io/video-downloader-app/](https://efrenvzpiva-spec.github.io/video-downloader-app/)**
+
+**Cómo funciona:**
+1. Abre el link de arriba
+2. Pega la URL del video (YouTube, Instagram, Facebook o X)
+3. Haz clic en "Descargar Video"
+4. La app te redirigirá al descargador apropiado y copiará tu URL automáticamente
+
+✅ **Sin Python, sin instalaciones, sin complicaciones**
+
+---
+
 ## ✨ Características
 
 - ✅ **Soporte Multi-plataforma**: YouTube, Instagram, Facebook y X (Twitter)
