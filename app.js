@@ -1,14 +1,11 @@
-// Frontend JavaScript para Video Downloader
-// Este código se conecta al backend Python
+// Frontend JavaScript para Video Downloader - VERSIÓN 100% WEB
+// No requiere backend, funciona directo desde el navegador
 
 const form = document.getElementById('downloadForm');
 const downloadBtn = document.getElementById('downloadBtn');
 const statusDiv = document.getElementById('status');
 const videoUrlInput = document.getElementById('videoUrl');
 const qualitySelect = document.getElementById('quality');
-
-// URL del backend (cambiar según donde esté hosteado)
-const API_URL = 'http://localhost:5000';
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -30,57 +27,91 @@ form.addEventListener('submit', async (e) => {
     // Deshabilitar botón y mostrar loading
     downloadBtn.disabled = true;
     downloadBtn.textContent = '⏳ Procesando...';
-    showStatus('Descargando video... Por favor espera', 'loading');
+    showStatus('Preparando descarga... Por favor espera', 'loading');
     
     try {
-        const response = await fetch(`${API_URL}/download`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                url: videoUrl,
-                quality: quality
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error('Error al descargar el video');
+        // Detectar plataforma y redirigir a servicio apropiado
+        if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+            await downloadYouTube(videoUrl, quality);
+        } else if (videoUrl.includes('instagram.com')) {
+            await downloadInstagram(videoUrl);
+        } else if (videoUrl.includes('facebook.com') || videoUrl.includes('fb.watch')) {
+            await downloadFacebook(videoUrl);
+        } else if (videoUrl.includes('twitter.com') || videoUrl.includes('x.com')) {
+            await downloadTwitter(videoUrl);
         }
-        
-        // Crear blob y descargar archivo
-        const blob = await response.blob();
-        const downloadUrl = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        
-        // Obtener nombre del archivo del header
-        const contentDisposition = response.headers.get('Content-Disposition');
-        let filename = 'video.mp4';
-        if (contentDisposition) {
-            const filenameMatch = contentDisposition.match(/filename="?(.+?)"?$/);
-            if (filenameMatch) {
-                filename = filenameMatch[1];
-            }
-        }
-        
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(downloadUrl);
-        
-        showStatus('✅ Video descargado exitosamente!', 'success');
-        videoUrlInput.value = '';
         
     } catch (error) {
         console.error('Error:', error);
-        showStatus('❌ Error al descargar el video. Por favor intenta de nuevo.', 'error');
+        showStatus('❌ Error al procesar el video. Por favor intenta de nuevo.', 'error');
     } finally {
         downloadBtn.disabled = false;
         downloadBtn.textContent = '⬇️ Descargar Video';
     }
 });
+
+async function downloadYouTube(url, quality) {
+    // Crear enlace con servicio de descarga
+    const videoId = extractYouTubeId(url);
+    if (!videoId) {
+        showStatus('❌ No se pudo extraer el ID del video', 'error');
+        return;
+    }
+    
+    // Usar servicio público para descargar
+    const downloadUrl = `https://www.y2mate.com/youtube/${videoId}`;
+    showStatus('✅ Redirigiendo a la página de descarga...', 'success');
+    window.open(downloadUrl, '_blank');
+}
+
+async function downloadInstagram(url) {
+    const downloadUrl = `https://snapinsta.app/`;
+    showStatus('📸 Abriendo descargador de Instagram... Pega tu URL allí', 'success');
+    window.open(downloadUrl, '_blank');
+    // Copiar URL al portapapeles
+    try {
+        await navigator.clipboard.writeText(url);
+        setTimeout(() => {
+            showStatus('✅ URL copiada al portapapeles! Pégala en la página que se abrió', 'success');
+        }, 1000);
+    } catch (err) {
+        console.log('No se pudo copiar al portapapeles');
+    }
+}
+
+async function downloadFacebook(url) {
+    const downloadUrl = `https://fdown.net/`;
+    showStatus('👥 Abriendo descargador de Facebook... Pega tu URL allí', 'success');
+    window.open(downloadUrl, '_blank');
+    try {
+        await navigator.clipboard.writeText(url);
+        setTimeout(() => {
+            showStatus('✅ URL copiada! Pégala en la página que se abrió', 'success');
+        }, 1000);
+    } catch (err) {
+        console.log('No se pudo copiar al portapapeles');
+    }
+}
+
+async function downloadTwitter(url) {
+    const downloadUrl = `https://twittervideodownloader.com/`;
+    showStatus('🐦 Abriendo descargador de X/Twitter... Pega tu URL allí', 'success');
+    window.open(downloadUrl, '_blank');
+    try {
+        await navigator.clipboard.writeText(url);
+        setTimeout(() => {
+            showStatus('✅ URL copiada! Pégala en la página que se abrió', 'success');
+        }, 1000);
+    } catch (err) {
+        console.log('No se pudo copiar al portapapeles');
+    }
+}
+
+function extractYouTubeId(url) {
+    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+}
 
 function isValidUrl(url) {
     const patterns = [
@@ -104,7 +135,7 @@ function showStatus(message, type) {
     if (type === 'success' || type === 'error') {
         setTimeout(() => {
             statusDiv.style.display = 'none';
-        }, 5000);
+        }, 8000);
     }
 }
 
@@ -113,7 +144,7 @@ videoUrlInput.addEventListener('paste', (e) => {
     setTimeout(() => {
         const url = videoUrlInput.value;
         if (isValidUrl(url)) {
-            showStatus('✓ URL válida detectada', 'success');
+            showStatus('✓ URL válida detectada. Haz clic en Descargar!', 'success');
         }
     }, 100);
 });
