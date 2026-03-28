@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Downloader - YouTube, Instagram, Facebook, X</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .platforms {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .platform-icon {
+            font-size: 2em;
+            padding: 10px;
+            border-radius: 10px;
+            background: #f5f5f5;
+            transition: transform 0.3s;
+        }
+        
+        .platform-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input[type="url"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="url"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .quality-select {
+            margin-bottom: 20px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .download-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .download-btn:active {
+            transform: translateY(0);
+        }
+        
+        .download-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.loading {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .features {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
+        .feature-item::before {
+            content: "✓";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📥 Video Downloader</h1>
+        <p class="subtitle">Descarga videos de YouTube, Instagram, Facebook y X</p>
+        
+        <div class="platforms">
+            <div class="platform-icon" title="YouTube">🎬</div>
+            <div class="platform-icon" title="Instagram">📸</div>
+            <div class="platform-icon" title="Facebook">👥</div>
+            <div class="platform-icon" title="X (Twitter)">🐦</div>
+        </div>
+        
+        <form id="downloadForm">
+            <div class="input-group">
+                <label for="videoUrl">URL del Video:</label>
+                <input 
+                    type="url" 
+                    id="videoUrl" 
+                    name="videoUrl" 
+                    placeholder="Pega aquí el enlace del video..." 
+                    required
+                >
+            </div>
+            
+            <div class="quality-select">
+                <label for="quality">Calidad:</label>
+                <select id="quality" name="quality">
+                    <option value="best">Mejor Calidad</option>
+                    <option value="1080p">1080p (Full HD)</option>
+                    <option value="720p">720p (HD)</option>
+                    <option value="480p">480p</option>
+                    <option value="360p">360p</option>
+                    <option value="audio">Solo Audio (MP3)</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="download-btn" id="downloadBtn">
+                ⬇️ Descargar Video
+            </button>
+        </form>
+        
+        <div class="status" id="status"></div>
+        
+        <div class="features">
+            <div class="feature-item">Soporte para YouTube, Instagram, Facebook y X</div>
+            <div class="feature-item">Descarga en múltiples calidades</div>
+            <div class="feature-item">Extracción de audio en MP3</div>
+            <div class="feature-item">Interfaz simple y rápida</div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
